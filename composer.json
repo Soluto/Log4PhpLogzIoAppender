@@ -2,7 +2,7 @@
     "name": "soluto/log4phpLogzIoAppender",
     "autoload": {
         "psr-4" : {
-            "Soluto\\LoggerAppenders" : "src"
+            "Soluto\\LoggerAppenders\\" : "src/"
         }
     }
 }
