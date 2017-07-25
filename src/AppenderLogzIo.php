@@ -15,13 +15,13 @@ class AppenderLogzIo extends \LoggerAppender {
         try {
             $message = $this->filterMessage($event->getMessage());
             $logTimestamp = date("Y-m-d\TH:i:s");
-            $throwable  = $this->parseThrowable($event->getThrowableInformation()->getThrowable());
+            $throwable  = $event->getThrowableInformation() ? $this->parseThrowable($event->getThrowableInformation()->getThrowable()) : null;
             $level = strtolower($event->getLevel()->toString());
 
             $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->serviceName);
             $this->writeEvent($messageEventToSend);
         }
-        catch(Exception $e){
+        catch(\Exception $e){
             error_log("Error occured while tring to append log event to LogzIo appender");
         }
     }
@@ -31,7 +31,7 @@ class AppenderLogzIo extends \LoggerAppender {
         $port = $this->port;
         $fp = stream_socket_client("tcp://".$address.":".$port, $errno, $errstr, 40);
                 
-        if (!$fp) throw new Exception("error occured while trying to send error to logz.io, the error is $errstr ($errno)");
+        if (!$fp) throw new \Exception("error occured while trying to send error to logz.io, the error is $errstr ($errno)");
         
         try {
             fwrite($fp, json_encode($messageToSend)."\n");
