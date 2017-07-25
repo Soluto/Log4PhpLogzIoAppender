@@ -1,0 +1,8 @@
+{
+    "name": "soluto/log4php-logzio-appender",
+    "autoload": {
+        "psr-0" : {
+            "Soluto\\LoggerAppenders" : "src"
+        }
+    }
+}
