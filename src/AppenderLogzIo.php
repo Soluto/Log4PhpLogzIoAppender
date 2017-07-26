@@ -10,6 +10,7 @@ class AppenderLogzIo extends \LoggerAppender {
     protected $port = "";
     protected $type = "";
     protected $logzAccountToken = "";
+    protected $throwablePrefix = "";
 
     public function append(\LoggerLoggingEvent $event) {
         try {
@@ -19,11 +20,17 @@ class AppenderLogzIo extends \LoggerAppender {
             $level = strtolower($event->getLevel()->toString());
 
             $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->type);
-            $this->writeEvent($messageEventToSend);
+            $this->writeEvent($this->addThrowablePrefix(json_encode($messageToSend)));
         }
         catch(\Exception $e){
             error_log("Error occured while tring to append log event to LogzIo appender");
         }
+    }
+
+    private function addThrowablePrefix($jsonMessage){
+        if (empty($this->throwablePrefix)) return $jsonMessage;
+
+        return str_replace("\"exception :\"",  "\"".$this->throwablePrefix."exception :\"", $jsonMessage);
     }
 
     private function writeEvent($messageToSend){
@@ -34,8 +41,7 @@ class AppenderLogzIo extends \LoggerAppender {
         if (!$fp) throw new \Exception("error occured while trying to send error to logz.io, the error is $errstr ($errno)");
         
         try {
-            fwrite($fp, json_encode($messageToSend)."\n");
-            error_log(json_encode($messageToSend));
+            fwrite($fp, $messageToSend."\n");
         }
         finally{
             fclose($fp);
@@ -51,7 +57,7 @@ class AppenderLogzIo extends \LoggerAppender {
             'code' => $throwable->getCode(),
             'file' => $throwable->getFile(),
             'line' => $throwable->getLine(),
-            'trace' => $throwable->getTrace(),
+            'trace' => $throwable->getTraceAsString(),
             'innerException' => $this->parseThrowable($throwable->getPrevious())
         );
     }
