@@ -8,7 +8,7 @@ class AppenderLogzIo extends \LoggerAppender {
 
     protected $host = "";
     protected $port = "";
-    protected $serviceName = "";
+    protected $type = "";
     protected $logzAccountToken = "";
 
     public function append(\LoggerLoggingEvent $event) {
@@ -18,7 +18,7 @@ class AppenderLogzIo extends \LoggerAppender {
             $throwable  = $event->getThrowableInformation() ? $this->parseThrowable($event->getThrowableInformation()->getThrowable()) : null;
             $level = strtolower($event->getLevel()->toString());
 
-            $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->serviceName);
+            $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->type);
             $this->writeEvent($messageEventToSend);
         }
         catch(\Exception $e){
@@ -75,13 +75,13 @@ class AppenderLogzIo extends \LoggerAppender {
         $this->port = $port;
     }
 
-    public function setServiceName($type) {
-        $this->serviceName = $type;
+    public function setType($type) {
+        $this->type = $type;
     }
 
-    public function getServiceName($type) {
-        if (empty($this->serviceName)) return "json";
-        return $this->serviceName;
+    public function getType($type) {
+        if (empty($this->type)) return "json";
+        return $this->type;
     }
 
     public function setLogzAccountToken($token) {
