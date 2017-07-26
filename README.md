@@ -30,7 +30,7 @@ example composer.json file:
 ```
     {
         "config": {
-            "vendor-dir": "empty-theme/composer-vendor",
+            "vendor-dir": "empty-theme/composer-vendor"
         },
         "require": {
             "apache/log4php": "^2.3",
