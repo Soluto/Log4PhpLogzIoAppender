@@ -20,19 +20,13 @@ class AppenderLogzIo extends \LoggerAppender {
             $level = strtolower($event->getLevel()->toString());
 
             $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->type);
-            $this->writeEvent($this->addThrowablePrefix(json_encode($messageToSend)));
+            $this->writeEvent(json_encode($messageEventToSend));
         }
         catch(\Exception $e){
             error_log("Error occured while tring to append log event to LogzIo appender");
         }
     }
-
-    private function addThrowablePrefix($jsonMessage){
-        if (empty($this->throwablePrefix)) return $jsonMessage;
-
-        return str_replace("\"exception :\"",  "\"".$this->throwablePrefix."exception :\"", $jsonMessage);
-    }
-
+    
     private function writeEvent($messageToSend){
         $address = $this->host;
         $port = $this->port;
