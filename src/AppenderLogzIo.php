@@ -18,13 +18,19 @@ class AppenderLogzIo extends \LoggerAppender {
             $logTimestamp = date("Y-m-d\TH:i:s");
             $throwable  = $event->getThrowableInformation() ? $this->parseThrowable($event->getThrowableInformation()->getThrowable()) : null;
             $level = strtolower($event->getLevel()->toString());
+            $extraData = $this->getExtraData($event);
 
-            $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->type);
+            $messageEventToSend = new LogzIoLogEventInfo($this->logzAccountToken, $message, $logTimestamp,$level,$throwable, $this->type, $extraData);
             $this->writeEvent(json_encode($messageEventToSend));
         }
         catch(\Exception $e){
             error_log("Error occured while tring to append log event to LogzIo appender");
         }
+    }
+
+    private function getExtraData(\LoggerLoggingEvent $event)
+    {
+        return (get_class($event) == ExtendedLoggerLoggingEvent::class) ? $event->extraData : null;
     }
     
     private function writeEvent($messageToSend){
