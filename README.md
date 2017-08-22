@@ -30,11 +30,11 @@ example composer.json file:
 ```
     {
         "config": {
-            "vendor-dir": "empty-theme/composer-vendor"
+            "vendor-dir": "my-theme/composer-vendor"
         },
         "require": {
             "apache/log4php": "^2.3",
-            "soluto/log4phpLogzIoAppender": "dev-master"
+            "soluto/log4phpLogzIoAppender":  "^0.1.0"
         },
         "repositories": [
             {
@@ -44,3 +44,16 @@ example composer.json file:
         ]
     }
 ```
+
+## How to send extra data
+Log4Php doesn't give us the option to send extra data as part of the entry so in order to overcome this issue we can use the ExtendedLoggerLoggingEvent class that extends LoggerLoggingEvent.
+
+
+example of using the ExtendedLoggerLoggingEvent:
+```
+    $logger = Logger::getLogger('soluto-logger');
+    $logEvent = new ExtendedLoggerLoggingEvent("Logger", $logger, LoggerLevel::getLevelInfo(), "MyMessage", null, null, array("Location"=>"TelAviv"));
+    $logger->logEvent($logEvent);
+```
+
+This code will add entry to LogzIo with the message "MyMessage" and a field called "Location" with the value of "TelAviv"
